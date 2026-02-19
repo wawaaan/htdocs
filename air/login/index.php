@@ -1,0 +1,316 @@
+<?php
+session_start();
+if(empty($_SESSION['user']) && empty($_SESSION['pass'])){
+    echo "<script>window.location.replace('../index.php')</script>";
+}
+include '../assets/funct.php';
+$air = new air_restu;
+$koneksi = $air->koneksi();
+$data_user = $air->dt_user($_SESSION['user']);
+$level = $data_user[2];
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Dashboard - SB Admin</title>
+        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+        <link href="../css/styles.css" rel="stylesheet" />
+        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="../js/air.js"></script>
+
+    </head>
+    <body class="sb-nav-fixed">
+        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+            <!-- Navbar Brand-->
+            <a class="navbar-brand ps-3 text-primary" href="index.php">AirRestu</a>
+            <!-- Sidebar Toggle-->
+            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+            <!-- Navbar Search-->
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div>
+            </form>
+            <!-- Navbar-->
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="#!">Settings</a></li>
+                        <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div id="layoutSidenav">
+            <div id="layoutSidenav_nav">
+                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                    <div class="sb-sidenav-menu">
+                        <div class="nav">
+                            <div class="sb-sidenav-menu-heading">Core</div>
+                            <a class="nav-link" href="index.php">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Dashboard
+                            </a>
+                            <?php
+                            if($level=="admin"){?>
+                                <a class="nav-link" href="index.php?p=user">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Manajemen User
+                                <a class="nav-link" href="index.php?p=pemakaian_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Lihat Pemakaian Warga
+                                <a class="nav-link" href="index.php?p=pembayaran_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Pembayaran Warga
+                                <a class="nav-link" href="index.php?p=ubah_datameter_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Ubah Datameter Warga
+                            </a>
+                            <?php
+                            }elseif($level=="bendahara"){
+                                ?>
+                                <a class="nav-link" href="index.php?p=pembayaran_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Pembayaran Warga
+                                <a class="nav-link" href="index.php?p=ubah_datameter_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Ubah Datameter Warga
+                                <?php
+                            }elseif($level=="petugas"){
+                                ?>
+                                <a class="nav-link" href="index.php?p=catat_meter_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Catat Meter Warga
+                                <a class="nav-link" href="index.php?p=pemakaian_warga">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Lihat Pemakaian Warga
+                                <a class="nav-link" href="index.php?p=ubah_datameter_warga_1">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Ubah Datameter Warga
+                                <?php
+                            }elseif($level=="warga"){
+                                ?>
+                                <a class="nav-link" href="index.php?p=lihat_pemakaian">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Pemakaian
+                                <a class="nav-link" href="index.php?p=lihat_tagihan">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Tagihan
+                                <a class="nav-link" href="index.php?p=bayar_tagihan">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt fa-spin text-success"></i></div>
+                                Pembayaran Tagihan
+                                <?php
+                            }
+                            ?>  
+
+                        </div>
+                    </div>
+                    <div class="sb-sidenav-footer">
+                        <div class="small"><i class="fa-regular fa-user fa-flip text-warning"></i> Logged in as: <?php echo $data_user[2]?></div>
+                        <i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color:red;"></i> <?php echo $data_user[0].' ('. $data_user[1]. ')'; ?>
+                    </div>
+                </nav>
+            </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <?Php
+                        // echo $_SERVER['REQUEST_URI'];
+                        $e = explode("=",$_SERVER['REQUEST_URI']);
+                        // echo "<BR>[0]: $e[0] --> [1]: $e[1]";
+                        if(!empty($e[1])){
+                            if($e[1] == 'user'){
+                                $h1 = "Manajemen User";
+                                $li = "Menu untuk CRUD User";
+                            }elseif($e[1] == 'pemakaian_warga'){
+                                $h1 = "Pemakaian Air Warga";
+                                $li = "Lihat Data Pemakaian Air Warga";
+                            }elseif($e[1] == 'pembayaran_warga'){
+                                $h1 = "Pembayaran Warga";
+                                $li = "Lihat Data Pembayaran Air Warga";
+                            }elseif($e[1] == 'ubah_datameter_warga'){
+                                $h1 = "Datameter Air Warga";
+                                $li = "Ubah Datameter Air Warga";
+                            }elseif($e[1] == 'catat_meter_warga'){
+                                $h1 = "Pencatatan Meter Air Warga";
+                                $li = "Catatan Air Warga";
+                            }elseif($e[1] == 'ubah_datameter_warga_1'){
+                                $h1 = "Datameter Air Warga";
+                                $li = "Ubah Datameter Air Warga 1 Bulan Sekali";
+                            }elseif($e[1] == 'lihat_pemakaian'){
+                                $h1 = "Pemakaian Air";
+                                $li = "Lihat Data Pemakaian Air";
+                            }elseif($e[1] == 'lihat_tagihan'){
+                                $h1 = "Tagihan Air";
+                                $li = "Lihat Rincian Tagihan Air";
+                            }elseif($e[1] == 'bayar_tagihan'){
+                                $h1 = "Pembayaran Tagihan";
+                                $li = "Bayar Tagihan Air";
+                            }
+                        }
+                        else{
+                            $h1 = "Dashboard";
+                            $li = "Dashboard";
+                        }
+                        ?>
+                        <h1 class="mt-4"><?php echo $h1 ?></h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active"><?php echo $li ?></li>
+                        </ol>
+                        <?php
+                        // echo "Sesi User: ",$_SESSION['user']," Sesi Pass: ",$_SESSION['pass'];
+                        // session_destroy();
+                        // echo "<BR>Setelah session destroy Sesi User: ",$_SESSION['user']," Sesi Pass: ",$_SESSION['pass'];
+                        ?>
+                        <div class="row" id = "summary">
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-primary text-white mb-4">
+                                    <div class="card-body">Primary Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-warning text-white mb-4">
+                                    <div class="card-body">Warning Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-success text-white mb-4">
+                                    <div class="card-body">Success Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <div class="card bg-danger text-white mb-4">
+                                    <div class="card-body">Danger Card</div>
+                                    <div class="card-footer d-flex align-items-center justify-content-between">
+                                        <a class="small text-white stretched-link" href="#">View Details</a>
+                                        <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="grafik">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        Area Chart Example
+                                    </div>
+                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-bar me-1"></i>
+                                        Bar Chart Example
+                                    </div>
+                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                DataTable Example
+                            </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Nama</th>
+                                            <th>Alamat</th>
+                                            <th>Kota</th>
+                                            <th>Telepon</th>
+                                            <th>level</th>
+                                            <th>tipe</th>
+                                            <th>status</th>
+                                            <th>editing</th>
+                                            </tr>
+                                    </thead>
+
+                                    </tbody>
+
+                                        <?php
+                                        $q = mysqli_query($koneksi,"SELECT username,nama,alamat,kota,tip,level,tipe, status FROM user ORDER BY level ASC");
+                                        while ($d = mysqli_fetch_row($q)) {
+                                            $user = $d[0];
+                                            $nama = $d[1];
+                                            $alamat = $d[2];
+                                            $kota = $d[3];
+                                            $tip = $d[4];
+                                            $level = $d[5];
+                                            $tipe = $d[6];
+                                            $status = $d[7];
+                                            
+                                            echo "<tr>
+                                                <td>$user</td>    
+                                                <td>$nama</td>    
+                                                <td>$alamat</td>    
+                                                <td>$kota</td>    
+                                                <td>$tip</td>    
+                                                <td>$level</td>    
+                                                <td>$tipe</td>    
+                                                <td>$status</td>
+                                                <td>
+                                                    <button type=button class=\"btn btn-outline-success btn-sm\">Ubah</button>
+                                                    <button type=button class=\"btn btn-outline-danger btn-sm\">Hapus</button>
+                                                </td>
+                                                </tr>";
+
+                                        }
+                                        ?>
+
+                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+                <footer class="py-4 bg-light mt-auto">
+                    <div class="container-fluid px-4">
+                        <div class="d-flex align-items-center justify-content-between small">
+                            <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                            <div>
+                                <a href="#">Privacy Policy</a>
+                                &middot;
+                                <a href="#">Terms &amp; Conditions</a>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+        <script src="../js/scripts.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+        <script src="../assets/demo/chart-area-demo.js"></script>
+        <script src="../assets/demo/chart-bar-demo.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+        <script src="../js/datatables-simple-demo.js"></script>
+    </body>
+</html>

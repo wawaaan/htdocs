@@ -1,0 +1,130 @@
+$(document).ready(function () {
+  console.log('test');
+  // variabel get
+  let url = window.location.href;
+  let get = url.split("=");
+
+  // menghilangkan semua isi
+  $(
+    "#summary, #grafik, #tambahUser,#tabelUser, #tabelTarif, #tambahTarif"
+  ).hide();
+
+  // switch untuk menu sebelah kiri
+  switch (get[1]) {
+    case "user_edit&user":
+    case "managemen-user":
+      // tampilkan tabel user & tombol tambah user
+      $("#tabelUser").show();
+      $(".datatable-dropdown").append(
+        '<button type="button" class="btn btn-outline-success float-start me-2" id="new-user"><i class="fa-solid fa-user-plus"></i> User</button>'
+      );
+
+      // ketika page berubah jadi user_edit tabel juga berubah
+      if (get[1] == "user_edit&user") {
+        $("#tambahUser").show();
+        $("#tabelUser").hide();
+        $("#tambahUser .card-header").html(
+          '<i class="fas fa-users me-1"></i> Edit User'
+        );
+        $("#user_form button").val("user_edit");
+        $("#user_form input[name='username']").attr("disabled", true);
+        $("#user_form").append(
+          `<input type="hidden" name="username" value=${get[2]} ></input>`
+        );
+      }
+
+      // menampilkan tabel user baru
+      $("#new-user").click(function (e) {
+        $("#tambahUser").show();
+        $("#tabelUser").hide();
+        $("#user_form input, #user_form text_area").show();
+        $("#tambahUser input,#tambahUser textarea").val("");
+      });
+
+      // mengaktifkan fungsi batal tambah
+      $("#batalTambah").click(function (e) {
+        $("#tambahUser").hide();
+        $("#tabelUser").show();
+      });
+
+      // modal untuk konfirmasi hapus
+      $(".tombolHapusUser").click(function (e) {
+        let user = $(this).attr("data-user");
+        $("#myModal .modal-body").text(
+          `Yakin menghapus data dengan username ${user}`
+        );
+        $(".modal-footer form").append(
+          `<input type="hidden" name="user" value="${user}"> `
+        );
+      });
+      break;
+    case "ubah-datameter-warga":
+      $("#grafik").show();
+      break;
+    case "pembayaran-warga":
+      $("#sumary").show();
+      break;
+    case "tarif_edit&kode":
+    case "managemen-tarif":
+      // menampilkan tabel tarif
+      $("#tabelTarif").show();
+      $("#tabelTarif .card-body a")
+        .first()
+        .append(
+          '<button type="button" class="btn btn-outline-success float-start me-2" id="new-tarif"><i class="fa-solid fa-hippo"></i> Tarif </button>'
+        );
+
+      // tambahkan tabel
+      const datatablesSimple2 = document.getElementById("datatablesSimple2");
+      if (datatablesSimple2) {
+        new simpleDatatables.DataTable(datatablesSimple2);
+      }
+
+      // if untuk edit tabel
+      if (get[1] == "tarif_edit&kode") {
+        $("#tambahTarif").show();
+        $("#tabelTarif").hide();
+        $("#tarif_form button").val("tarif_edit");
+        $("#tarif_form input[name='kodeTarif']").attr("disabled", true);
+        $("#tarif_form").append(
+          `<input type="hidden" name="kodeTarif" value=${get[2]} ></input>`
+        );
+      }
+
+      // menambahkan tarif
+      $("#new-tarif").click(function (e) {
+        $("#tambahTarif").show();
+        $("#tabelTarif").hide();
+        $("#user_form input, #user_form text_area").show();
+        $("#tambahTarif input").val("");
+      });
+
+      // batal tambah
+      $("#batalTambahTarif").click(function (e) {
+        $("#tambahUser").hide();
+        $("#tabelUser").show();
+      });
+
+      // merubah value tombol hapus
+      $(".modal-footer form button").click(function () {
+        // over
+        $(this).attr("value", "tarif_hapus");
+      });
+
+      // modal untuk konfirmasi hapus
+      $(".tombolHapusTarif").click(function (e) {
+        console.log("1");
+        let kodeTarif = $(this).attr("data-tarif");
+        $("#myModal .modal-body").text(
+          `Yakin menghapus Data dengan kode tarif ${kodeTarif}`
+        );
+        $(".modal-footer form").append(
+          `<input type="hidden" name="tarif" value="${kodeTarif}"> `
+        );
+      });
+
+      break;
+    default:
+      $("#summary, #grafik").show();
+  }
+});
